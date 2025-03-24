@@ -1,19 +1,18 @@
-
-import streamlit as st
-import pandas as pd
-from sklearn.linear_model import LinearRegression
-import matplotlib.pyplot as plt
-import numpy as np
+import streamlit as st  # type: ignore
+import pandas as pd  # type: ignore
+from sklearn.linear_model import LinearRegression  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
+import numpy as np  # type: ignore
 
 # Load the dataset
-@st.cache
+@st.cache_data  # Updated caching
 def load_data():
     return pd.read_csv('cs_students.csv', encoding='ascii')
 
 df = load_data()
 
 # Train the model (for simplicity, we will retrain it here)
-@st.cache
+@st.cache_resource  # Updated caching
 def train_model():
     features = df[['Age', 'GPA']]
     X = features.drop('GPA', axis=1)
@@ -25,14 +24,7 @@ def train_model():
 model = train_model()
 
 # Streamlit app layout
-st.title('Student Career Recommendation Dashboard')
-
-# # Login/Signup Page (for simplicity, we will skip actual authentication)
-# if st.sidebar.checkbox('Login/Signup'):
-#     username = st.sidebar.text_input('Username')
-#     password = st.sidebar.text_input('Password', type='password')
-#     if st.sidebar.button('Submit'):
-#         st.sidebar.success('Logged in successfully!')
+st.title('Smart Career Guidance Dashboard')
 
 # Dropdown menu for student names
 student_names = df['Name'].tolist()
@@ -47,18 +39,15 @@ st.write(f'**GPA:** {student_details["GPA"]}')
 st.write(f'**Major:** {student_details["Major"]}')
 st.write(f'**Interested Domain:** {student_details["Interested Domain"]}')
 
-# Career recommendation (dummy logic for demonstration)
-if student_details["GPA"] >= 3.5:
-    career_recommendation = "Software Engineer"
-else:
-    career_recommendation = "Data Analyst"
-
+# Career recommendation logic
+career_recommendation = "Software Engineer" if student_details["GPA"] >= 3.5 else "Data Analyst"
 st.write(f'**Predicted Career Recommendation:** {career_recommendation}')
 
-# Skill graph displayed on the right side
+# Fetch student-specific skill levels
 skills = ["Python", "SQL", "Java"]
-skill_levels = [3, 2, 1]  # Dummy skill levels
+skill_levels = [student_details["Python"], student_details["SQL"], student_details["Java"]]
 
+# Skill graph
 fig, ax = plt.subplots()
 ax.barh(skills, skill_levels, color='skyblue')
 ax.set_xlabel('Skill Level')
